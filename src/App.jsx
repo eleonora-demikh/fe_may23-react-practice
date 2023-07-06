@@ -47,16 +47,16 @@ function getPreparedProducts(
     preparedProducts.sort((product1, product2) => {
       switch (sortField) {
         case 'product':
-          return product1.name.localeCompare(product2.name);
+          return product2.name.localeCompare(product1.name);
 
         case 'id':
-          return product1.id - product2.id;
+          return product2.id - product1.id;
 
         case 'category':
-          return product1.category.title.localeCompare(product2.category.title);
+          return product2.category.title.localeCompare(product1.category.title);
 
         case 'user':
-          return product1.owner.name.localeCompare(product2.owner.name);
+          return product2.owner.name.localeCompare(product1.owner.name);
 
         default:
           return 0;
@@ -227,7 +227,13 @@ export const App = () => {
                           }}
                         >
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort" />
+                            <i
+                              data-cy="SortIcon"
+                              className={isReversed % 2 === 0
+                                ? 'fas fa-sort-up'
+                                : 'fas fa-sort-down'
+                              }
+                            />
                           </span>
                         </a>
                       </span>
@@ -248,7 +254,10 @@ export const App = () => {
                             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                             <i
                               data-cy="SortIcon"
-                              className="fas fa-sort-down"
+                              className={isReversed % 2 === 0
+                                ? 'fas fa-sort-up'
+                                : 'fas fa-sort-down'
+                              }
                             />
                           </span>
                         </a>
@@ -267,7 +276,13 @@ export const App = () => {
                           }}
                         >
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort-up" />
+                            <i
+                              data-cy="SortIcon"
+                              className={isReversed % 2 === 0
+                                ? 'fas fa-sort-up'
+                                : 'fas fa-sort-down'
+                              }
+                            />
                           </span>
                         </a>
                       </span>
