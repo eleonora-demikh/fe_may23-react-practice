@@ -29,6 +29,7 @@ function getPreparedProducts(
   { filterField },
   { sortField },
   { isReversed },
+  { selectedCategories },
 ) {
   let preparedProducts = [...productsCard];
 
@@ -64,6 +65,19 @@ function getPreparedProducts(
     });
   }
 
+  if (selectedCategories.length > 0) {
+    let selectedProducts = [];
+
+    selectedCategories.forEach((category) => {
+      const filtered = (preparedProducts
+        .filter(product => product.category.title === category));
+
+      selectedProducts = [...selectedProducts, ...filtered];
+    });
+
+    preparedProducts = [...selectedProducts];
+  }
+
   if (isReversed % 2) {
     preparedProducts.reverse();
   }
@@ -76,6 +90,7 @@ export const App = () => {
   const [filterField, setFilterField] = useState('');
   const [sortField, setSortField] = useState('');
   const [isReversed, setIsReversed] = useState(0);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const visibleProducts = getPreparedProducts(
     products,
@@ -83,6 +98,7 @@ export const App = () => {
     { filterField },
     { sortField },
     { isReversed },
+    { selectedCategories },
   );
 
   const reset = () => {
@@ -90,10 +106,25 @@ export const App = () => {
     setFilterField('');
     setSortField('');
     setIsReversed(0);
+    setSelectedCategories([]);
   };
 
   const reverseProd = () => {
     setIsReversed(reversed => reversed + 1);
+  };
+
+  const isSelected = categoryToCheck => selectedCategories
+    .some(category => category === categoryToCheck);
+
+  const addSelectedCategory = (categoryToAdd) => {
+    setSelectedCategories([...selectedCategories, categoryToAdd]);
+  };
+
+  const unselectCategory = (categoryToRemove) => {
+    setSelectedCategories(
+      selectedCategories
+        .filter(category => category !== categoryToRemove),
+    );
   };
 
   return (
@@ -173,18 +204,34 @@ export const App = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className="button is-success mr-6 is-outlined"
+                onClick={() => setSelectedCategories([])}
               >
                 All
               </a>
 
               {categoriesFromServer.map(category => (
-                <a
-                  data-cy="Category"
-                  className="button mr-2 my-1 is-info"
-                  href="#/"
-                >
-                  {category.title}
-                </a>
+                isSelected(category.title)
+                  ? (
+                    <a
+                      data-cy="Category"
+                      className="button mr-2 my-1 is-info"
+                      href="#/"
+                      key={category.id}
+                      onClick={() => unselectCategory(category.title)}
+                    >
+                      {category.title}
+                    </a>
+                  ) : (
+                    <a
+                      data-cy="Category"
+                      className="button mr-2 my-1"
+                      href="#/"
+                      key={category.id}
+                      onClick={() => addSelectedCategory(category.title)}
+                    >
+                      {category.title}
+                    </a>
+                  )
               ))}
             </div>
 
