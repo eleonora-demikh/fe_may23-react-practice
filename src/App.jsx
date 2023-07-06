@@ -203,7 +203,10 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={selectedCategories.length < 1
+                  ? 'button mr-6 is-success'
+                  : 'button mr-6 is-outlined'
+                }
                 onClick={() => setSelectedCategories([])}
               >
                 All
