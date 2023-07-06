@@ -23,7 +23,13 @@ const products = setCategory.map(product => ({
   owner: getProductOwner(product.category.ownerId),
 }));
 
-function getPreparedProducts(productsCard, { filterByOwner }, { filterField }) {
+function getPreparedProducts(
+  productsCard,
+  { filterByOwner },
+  { filterField },
+  { sortField },
+  { isReversed },
+) {
   let preparedProducts = [...productsCard];
 
   if (filterByOwner) {
@@ -37,22 +43,57 @@ function getPreparedProducts(productsCard, { filterByOwner }, { filterField }) {
     ));
   }
 
+  if (sortField) {
+    preparedProducts.sort((product1, product2) => {
+      switch (sortField) {
+        case 'product':
+          return product1.name.localeCompare(product2.name);
+
+        case 'id':
+          return product1.id - product2.id;
+
+        case 'category':
+          return product1.category.title.localeCompare(product2.category.title);
+
+        case 'user':
+          return product1.owner.name.localeCompare(product2.owner.name);
+
+        default:
+          return 0;
+      }
+    });
+  }
+
+  if (isReversed % 2) {
+    preparedProducts.reverse();
+  }
+
   return preparedProducts;
 }
 
 export const App = () => {
   const [filterByOwner, setFilterByOwner] = useState('');
   const [filterField, setFilterField] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [isReversed, setIsReversed] = useState(0);
 
   const visibleProducts = getPreparedProducts(
     products,
     { filterByOwner },
     { filterField },
+    { sortField },
+    { isReversed },
   );
 
   const reset = () => {
     setFilterByOwner('');
     setFilterField('');
+    setSortField('');
+    setIsReversed(0);
+  };
+
+  const reverseProd = () => {
+    setIsReversed(reversed => reversed + 1);
   };
 
   return (
@@ -178,7 +219,13 @@ export const App = () => {
                       <span className="is-flex is-flex-wrap-nowrap">
                         ID
 
-                        <a href="#/">
+                        <a
+                          href="#/"
+                          onClick={() => {
+                            setSortField('id');
+                            reverseProd();
+                          }}
+                        >
                           <span className="icon">
                             <i data-cy="SortIcon" className="fas fa-sort" />
                           </span>
@@ -190,9 +237,19 @@ export const App = () => {
                       <span className="is-flex is-flex-wrap-nowrap">
                         Product
 
-                        <a href="#/">
+                        <a
+                          href="#/"
+                          onClick={() => {
+                            setSortField('product');
+                            reverseProd();
+                          }}
+                        >
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort-down" />
+                            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                            <i
+                              data-cy="SortIcon"
+                              className="fas fa-sort-down"
+                            />
                           </span>
                         </a>
                       </span>
@@ -202,7 +259,13 @@ export const App = () => {
                       <span className="is-flex is-flex-wrap-nowrap">
                         Category
 
-                        <a href="#/">
+                        <a
+                          href="#/"
+                          onClick={() => {
+                            setSortField('category');
+                            reverseProd();
+                          }}
+                        >
                           <span className="icon">
                             <i data-cy="SortIcon" className="fas fa-sort-up" />
                           </span>
@@ -214,9 +277,21 @@ export const App = () => {
                       <span className="is-flex is-flex-wrap-nowrap">
                         User
 
-                        <a href="#/">
+                        <a
+                          href="#/"
+                          onClick={() => {
+                            setSortField('user');
+                            reverseProd();
+                          }}
+                        >
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort" />
+                            <i
+                              data-cy="SortIcon"
+                              className={isReversed % 2 === 0
+                                ? 'fas fa-sort-up'
+                                : 'fas fa-sort-down'
+                              }
+                            />
                           </span>
                         </a>
                       </span>
