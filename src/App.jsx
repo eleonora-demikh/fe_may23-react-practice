@@ -374,7 +374,7 @@ export const App = () => {
                       <td data-cy="ProductName">{product.name}</td>
                       <td data-cy="ProductCategory">
                         <span>{product.category.icon}</span>
-                        -
+                        {` - `}
                         {product.category.title}
                       </td>
 
