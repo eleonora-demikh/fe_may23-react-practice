@@ -75,7 +75,8 @@ function getPreparedProducts(
       selectedProducts = [...selectedProducts, ...filtered];
     });
 
-    preparedProducts = [...selectedProducts];
+    preparedProducts = [...selectedProducts]
+      .sort((product1, product2) => product1.id - product2.id);
   }
 
   if (isReversed % 2) {
