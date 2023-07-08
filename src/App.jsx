@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
@@ -48,16 +49,16 @@ function getPreparedProducts(
     preparedProducts.sort((product1, product2) => {
       switch (sortField) {
         case 'product':
-          return product2.name.localeCompare(product1.name);
+          return product1.name.localeCompare(product2.name);
 
         case 'id':
-          return product2.id - product1.id;
+          return product1.id - product2.id;
 
         case 'category':
-          return product2.category.title.localeCompare(product1.category.title);
+          return product1.category.title.localeCompare(product2.category.title);
 
         case 'user':
-          return product2.owner.name.localeCompare(product1.owner.name);
+          return product1.owner.name.localeCompare(product2.owner.name);
 
         default:
           return 0;
@@ -79,7 +80,7 @@ function getPreparedProducts(
       .sort((product1, product2) => product1.id - product2.id);
   }
 
-  if (isReversed % 2) {
+  if (isReversed === true) {
     preparedProducts.reverse();
   }
 
@@ -90,7 +91,7 @@ export const App = () => {
   const [filterByOwner, setFilterByOwner] = useState('');
   const [filterField, setFilterField] = useState('');
   const [sortField, setSortField] = useState('');
-  const [isReversed, setIsReversed] = useState(0);
+  const [isReversed, setIsReversed] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const visibleProducts = getPreparedProducts(
@@ -106,12 +107,8 @@ export const App = () => {
     setFilterByOwner('');
     setFilterField('');
     setSortField('');
-    setIsReversed(0);
+    setIsReversed(false);
     setSelectedCategories([]);
-  };
-
-  const reverseProd = () => {
-    setIsReversed(reversed => reversed + 1);
   };
 
   const isSelected = categoryToCheck => selectedCategories
@@ -127,6 +124,31 @@ export const App = () => {
         .filter(category => category !== categoryToRemove),
     );
   };
+
+  function sortBy(newSortField) {
+    const firstClick = newSortField !== sortField;
+    const secondClick = newSortField === sortField && !isReversed;
+    const thirdClick = newSortField === sortField && isReversed;
+
+    if (firstClick) {
+      setSortField(newSortField);
+      setIsReversed(false);
+
+      return;
+    }
+
+    if (secondClick) {
+      setSortField(newSortField);
+      setIsReversed(true);
+
+      return;
+    }
+
+    if (thirdClick) {
+      setSortField('');
+      setIsReversed(false);
+    }
+  }
 
   return (
     <div className="section">
@@ -272,17 +294,17 @@ export const App = () => {
 
                         <a
                           href="#/"
-                          onClick={() => {
-                            setSortField('id');
-                            reverseProd();
-                          }}
+                          onClick={() => sortBy('id')}
                         >
                           <span className="icon">
                             <i
                               data-cy="SortIcon"
-                              className={isReversed % 2 === 0
-                                ? 'fas fa-sort-up'
-                                : 'fas fa-sort-down'
+                              className={classNames('fas', {
+                                'fa-sort': sortField !== 'id',
+                                'fa-sort-up': sortField === 'id' && isReversed,
+                                'fa-sort-down': sortField === 'id'
+                                  && !isReversed,
+                              })
                               }
                             />
                           </span>
@@ -296,18 +318,19 @@ export const App = () => {
 
                         <a
                           href="#/"
-                          onClick={() => {
-                            setSortField('product');
-                            reverseProd();
-                          }}
+                          onClick={() => sortBy('product')}
                         >
                           <span className="icon">
                             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                             <i
                               data-cy="SortIcon"
-                              className={isReversed % 2 === 0
-                                ? 'fas fa-sort-up'
-                                : 'fas fa-sort-down'
+                              className={classNames('fas', {
+                                'fa-sort': sortField !== 'product',
+                                'fa-sort-up': sortField === 'product'
+                                  && isReversed,
+                                'fa-sort-down': sortField === 'product'
+                                  && !isReversed,
+                              })
                               }
                             />
                           </span>
@@ -321,17 +344,18 @@ export const App = () => {
 
                         <a
                           href="#/"
-                          onClick={() => {
-                            setSortField('category');
-                            reverseProd();
-                          }}
+                          onClick={() => sortBy('category')}
                         >
                           <span className="icon">
                             <i
                               data-cy="SortIcon"
-                              className={isReversed % 2 === 0
-                                ? 'fas fa-sort-up'
-                                : 'fas fa-sort-down'
+                              className={classNames('fas', {
+                                'fa-sort': sortField !== 'caregory',
+                                'fa-sort-up': sortField === 'category'
+                                  && isReversed,
+                                'fa-sort-down': sortField === 'category'
+                                  && !isReversed,
+                              })
                               }
                             />
                           </span>
@@ -345,17 +369,18 @@ export const App = () => {
 
                         <a
                           href="#/"
-                          onClick={() => {
-                            setSortField('user');
-                            reverseProd();
-                          }}
+                          onClick={() => sortBy('user')}
                         >
                           <span className="icon">
                             <i
                               data-cy="SortIcon"
-                              className={isReversed % 2 === 0
-                                ? 'fas fa-sort-up'
-                                : 'fas fa-sort-down'
+                              className={classNames('fas', {
+                                'fa-sort': sortField !== 'user',
+                                'fa-sort-up': sortField === 'user'
+                                  && isReversed,
+                                'fa-sort-down': sortField === 'user'
+                                  && !isReversed,
+                              })
                               }
                             />
                           </span>
